@@ -86,7 +86,7 @@ function App() {
         <div>Loading...</div>
       </> :
       <>
-        <h1>Study Record List</h1>
+        <h1>Study Record Listtttt</h1>
         <InputRecord about={about} hour={hour} onChangeAbout={onChangeAbout} onChangeHour={onChangeHour} onClickAdd={onClickAdd} />
         {error && <p style={{ color: "red" }}>You have to fill all the information.</p>}
         <RecordList records={records} total={total} onClickDelete={onClickDelete} />

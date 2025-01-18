@@ -1,0 +1,27 @@
+name: Deploy
+
+# masterにpushするたびに、github actionsを走らせる。
+on:
+  push:
+    branches: [ main ]
+
+# jobを複数定義できる。
+jobs:
+  front:
+    # ((省略))
+
+  firestore:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    # front同様、SAのkeyを環境変数として渡す。
+    # firebaseのdeployコマンドのoptionが異なる。
+    - name: Deploy Firestore rules and index
+      uses: w9jds/firebase-action@main
+      with:
+        args: deploy --only firestore
+      env:
+        PROJECT_ID: your-pj-id
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        PROJECT_PATH: ./firestore

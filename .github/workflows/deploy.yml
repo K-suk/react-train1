@@ -1,27 +1,53 @@
 name: Deploy
 
-# masterにpushするたびに、github actionsを走らせる。
+# mainブランチにpushされたときに実行
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
-# jobを複数定義できる。
 jobs:
   front:
-    # ((省略))
+    runs-on: ubuntu-latest
+    steps:
+      # リポジトリをチェックアウト
+      - uses: actions/checkout@v3
+
+      # Node.js をセットアップ
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # 依存関係をインストール
+      - name: Install dependencies
+        run: npm install
+
+      # アプリをビルド
+      - name: Build project
+        run: npm run build
+
+      # Firebase CLI をインストール
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      # Firebase Deploy (Hostingをデプロイ)
+      - name: Deploy to Firebase Hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_TUTORIAL2_22D0C }}
+        run: firebase deploy --only hosting
 
   firestore:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      # リポジトリをチェックアウト
+      - uses: actions/checkout@v3
 
-    # front同様、SAのkeyを環境変数として渡す。
-    # firebaseのdeployコマンドのoptionが異なる。
-    - name: Deploy Firestore rules and index
-      uses: w9jds/firebase-action@main
-      with:
-        args: deploy --only firestore
-      env:
-        PROJECT_ID: your-pj-id
-        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-        PROJECT_PATH: ./firestore
+      # Firestoreルールとインデックスをデプロイ
+      - name: Deploy Firestore rules and index
+        uses: w9jds/firebase-action@main
+        with:
+          args: deploy --only firestore
+        env:
+          PROJECT_ID: your-pj-id
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}

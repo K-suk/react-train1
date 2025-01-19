@@ -1,46 +1,23 @@
-name: Deploy to Firebase Hosting
+name: Firebase Deploy
 
 on:
   push:
-    branches:
-      - main
+    branches: 
+    - main
 
 jobs:
-  deploy:
-    name: Deploy to Firebase Hosting
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      # リポジトリのチェックアウト
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      # Node.js のセットアップ
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
         with:
-          node-version: 18
-
-      # パッケージのインストール
-      - name: Install dependencies
-        run: npm install
-
-      # ビルドの実行
-      - name: Build project
-        run: npm run build
-
-      # Firebase CLI のインストール
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
-
-      # Firebase 認証
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
+          node-version: '12'
+      - run: npm ci
+      - run: npm run build
+      - name: GitHub Action for Firebase
+        uses: w9jds/firebase-action@v1.5.0
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
-          create_credentials_file: true
-
-      # Firebase Hosting へのデプロイ
-      - name: Deploy to Firebase Hosting
-        run: firebase deploy --only hosting --project=react-tutorial2-22d0c
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

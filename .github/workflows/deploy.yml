@@ -3,7 +3,7 @@ name: Firebase Deploy
 on:
   push:
     branches: 
-    - main
+      - main
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
             ${{ runner.os }}-node-
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'  # Updated to Node.js version 18
       - run: npm ci
       - run: npm run build
       - name: GitHub Action for Firebase

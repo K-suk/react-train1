@@ -1,53 +1,33 @@
 name: Deploy
 
-# mainブランチにpushされたときに実行
 on:
   push:
     branches:
       - main
 
 jobs:
-  front:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      # リポジトリをチェックアウト
       - uses: actions/checkout@v3
 
-      # Node.js をセットアップ
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 依存関係をインストール
       - name: Install dependencies
         run: npm install
 
-      # アプリをビルド
       - name: Build project
         run: npm run build
 
-      # Firebase CLI をインストール
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+      # サービスアカウントキーを動的に設定
+      - name: Set GOOGLE_APPLICATION_CREDENTIALS
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" > sa-key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$PWD/sa-key.json
 
-      # Firebase Deploy (Hostingをデプロイ)
+      # Firebase Hostingにデプロイ
       - name: Deploy to Firebase Hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_TUTORIAL2_22D0C }}
         run: firebase deploy --only hosting
-
-  firestore:
-    runs-on: ubuntu-latest
-    steps:
-      # リポジトリをチェックアウト
-      - uses: actions/checkout@v3
-
-      # Firestoreルールとインデックスをデプロイ
-      - name: Deploy Firestore rules and index
-        uses: w9jds/firebase-action@main
-        with:
-          args: deploy --only firestore
-        env:
-          PROJECT_ID: your-pj-id
-          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}

@@ -34,4 +34,6 @@ jobs:
 
       # Firebase Hosting にデプロイ
       - name: Deploy to Firebase Hosting
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: $PWD/sa-key.json
         run: firebase deploy --only hosting
